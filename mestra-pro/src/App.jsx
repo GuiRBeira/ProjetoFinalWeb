@@ -1,22 +1,17 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-// 1. FALTAVAM ESTES IMPORTS
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
-import AppLayout from './components/AppLayout'; // Importe o novo layout
-import GeneratePage from './pages/GeneratePage'; // Importe a página de geração
-import DashboardPage from './pages/DashboardPage'; // Importe a página do dashboard
-
-// Lembre-se de importar as outras páginas aqui também quando for usá-las
-// import DashboardPage from './pages/DashboardPage'; 
-// import GeneratePage from './pages/GeneratePage';
-
-// É uma boa prática definir o tema FORA do componente App,
-// para que ele não seja recriado toda vez que o componente renderizar.
+import AppLayout from './components/AppLayout';
+import GeneratePage from './pages/GeneratePage';
+import DashboardPage from './pages/DashboardPage';
 
 const theme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
   components: {
     MuiCssBaseline: {
       styleOverrides: {
@@ -29,9 +24,70 @@ const theme = createTheme({
         },
       },
     },
-  },
-  palette: {
-    mode: 'dark',
+    // REGRA GLOBAL PARA TODAS AS CAIXAS DE INPUT COM BORDA
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          // Cor do texto digitado
+          '& input': {
+            color: '#EDE9FE',
+          },
+          // Cor do texto selecionado no Select
+          '& .MuiSelect-select': {
+            color: '#EDE9FE',
+          },
+          '& fieldset': {
+            borderColor: '#E879F9', // Borda padrão
+          },
+          '&:hover fieldset': {
+            borderColor: '#D946EF', // Borda no hover
+          },
+          '&.Mui-focused fieldset': {
+            borderColor: '#C026D3', // Borda no foco
+          },
+        },
+      },
+    },
+    // REGRA GLOBAL PARA TODAS AS LABELS
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color: '#A855F7', // Cor padrão
+          '&.Mui-focused': {
+            color: '#D946EF', // Cor no foco
+          },
+        },
+      },
+    },
+    // REGRA GLOBAL PARA A SETA DO SELECT
+    MuiSelect: {
+      styleOverrides: {
+        icon: {
+          color: '#A855F7',
+        },
+      },
+    },
+    MuiButton: {
+      defaultProps: {
+        size: 'large',
+      },
+      styleOverrides: {
+        contained: {
+          backgroundColor: '#9333EA',
+          '&:hover': {
+            backgroundColor: '#7e22ce',
+          },
+        },
+        outlined: {
+          borderColor: '#9333EA',
+          color: '#9333EA',
+          '&:hover': {
+            borderColor: '#7e22ce',
+            backgroundColor: 'rgba(147, 51, 234, 0.1)',
+          },
+        },
+      },
+    },
   },
 });
 
@@ -41,15 +97,11 @@ function App() {
       <CssBaseline />
       <BrowserRouter>
         <Routes>
-          {/* Rotas públicas que não usam o AppLayout */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
-
-          {/* Rotas privadas que USAM o AppLayout compartilhado */}
           <Route element={<AppLayout />}>
             <Route path="/app/dashboard" element={<DashboardPage />} />
             <Route path="/app/gerar" element={<GeneratePage />} />
-            {/* Todas as futuras rotas da aplicação podem ir aqui dentro */}
           </Route>
         </Routes>
       </BrowserRouter>

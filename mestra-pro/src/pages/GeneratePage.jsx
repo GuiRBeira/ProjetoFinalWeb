@@ -185,12 +185,7 @@ export default function GeneratePage() {
                     fullWidth
                     variant="contained"
                     size="large"
-                    sx={{ mt: 3, mb: 2, 
-                        backgroundColor: 'magenta',
-                        '&:hover': {
-                            backgroundColor: 'rgba(60, 3, 60, 0.8)',
-                            color: '#fff'
-                    }}}
+                    sx={{ mt: 3, mb: 2, }}
                     disabled={isLoading} 
                 >
                     {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Gerar Plano com IA'}
@@ -201,11 +196,6 @@ export default function GeneratePage() {
                     variant="outlined"
                     fullWidth
                     disabled={isLoading}
-                    sx={{ color: 'magenta',
-                        borderColor: 'magenta', 
-                        '&:hover': {
-                            backgroundColor: 'rgba(255, 0, 255, 0.1)',
-                            borderColor: 'magenta'}}}
                 >
                     Voltar para o Dashboard
                 </Button>
