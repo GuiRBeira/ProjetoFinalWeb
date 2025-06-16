@@ -1,6 +1,7 @@
 // 1. Importe o 'useState' do React
 import { useState } from 'react';
 import { Container, Box, Typography, TextField, Button } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
 export default function LoginPage() {
   // 2. Crie os estados para email e senha
@@ -29,12 +30,31 @@ export default function LoginPage() {
           alignItems: 'center',
         }}
       >
+
         <Typography component="h1" variant="h5">
           Acessar MestraPro
         </Typography>
 
         {/* 5. Adicione o 'onSubmit' ao nosso formulário */}
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          <Button
+            component={RouterLink}
+            to="/"
+            variant="contained"
+            fullWidth
+            sx={{ mb:1 }}
+          >
+            Homepage
+          </Button>
+          <Button
+            component={RouterLink}
+            to="/app/dashboard"
+            variant="contained"
+            fullWidth
+            sx={{ mb:1 }}
+          >
+            Voltar para o Dashboard
+          </Button>
           <TextField
             margin="normal"
             required
@@ -65,7 +85,7 @@ export default function LoginPage() {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{ mt: 2 }}
           >
             Entrar
           </Button>

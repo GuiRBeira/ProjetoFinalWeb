@@ -11,20 +11,26 @@ import DashboardPage from './pages/DashboardPage';
 const theme = createTheme({
   palette: {
     mode: 'dark',
+    // ADICIONE ESTE BLOCO PARA DEFINIR SUA COR PRIMÁRIA
+    primary: {
+      main: '#C026D3', // Defina o seu roxo de foco como a cor principal do site
+    },
+    // Opcional, mas bom para consistência
+    secondary: {
+      main: '#E879F9', // O roxo mais claro como cor secundária
+    },
   },
   components: {
     MuiCssBaseline: {
       styleOverrides: {
         body: {
           backgroundColor: '#161616',
-          backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0)',
+          backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.05) 1px, transparent 0)',
           backgroundSize: '20px 20px',
           backgroundRepeat: 'repeat',
-          color: '#dfe4e9', 
-        },
+          fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',},
       },
     },
-    // REGRA GLOBAL PARA TODAS AS CAIXAS DE INPUT COM BORDA
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
@@ -37,7 +43,7 @@ const theme = createTheme({
             color: '#EDE9FE',
           },
           '& fieldset': {
-            borderColor: '#E879F9', // Borda padrão
+            borderColor: '#C026D3', // Borda padrão
           },
           '&:hover fieldset': {
             borderColor: '#D946EF', // Borda no hover
