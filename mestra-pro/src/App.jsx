@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage';
 import AppLayout from './components/AppLayout';
 import GeneratePage from './pages/GeneratePage';
 import DashboardPage from './pages/DashboardPage';
+import BeamerPreviewPage from './pages/BeamerPreviewPage';
 
 const theme = createTheme({
   palette: {
@@ -108,6 +109,7 @@ function App() {
           <Route element={<AppLayout />}>
             <Route path="/app/dashboard" element={<DashboardPage />} />
             <Route path="/app/gerar" element={<GeneratePage />} />
+            <Route path="/app/beamer-preview" element={<BeamerPreviewPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

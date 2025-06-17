@@ -1,19 +1,19 @@
 import { useState } from 'react';
-import { 
-    Container, 
-    Box, 
-    Typography, 
-    TextField, 
-    Button, 
-    FormControl, 
-    InputLabel, 
-    Select, 
-    MenuItem, 
-    CircularProgress, 
-    Snackbar 
+import {
+    Container,
+    Box,
+    Typography,
+    TextField,
+    Button,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    CircularProgress,
+    Snackbar,
+    Paper, // Importe Paper para o box de resultado
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
-// 1. Importe o ReactMarkdown (não se esqueça de rodar 'npm install react-markdown')
+import { Link as RouterLink, useNavigate } from 'react-router-dom'; // Importe useNavigate
 import ReactMarkdown from 'react-markdown';
 
 export default function GeneratePage() {
@@ -23,14 +23,13 @@ export default function GeneratePage() {
     const [isLoading, setIsLoading] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
-    // 2. Adicione um novo estado para guardar o resultado do plano de aula
-    const [result, setResult] = useState('');
+    const [generatedPlan, setGeneratedPlan] = useState(''); // Renomeado de 'result' para 'generatedPlan'
+    const navigate = useNavigate(); // Hook para navegação programática
 
     const handleSubmit = (event) => {
         event.preventDefault();
         setIsLoading(true);
-        // 3. Limpe o resultado anterior antes de gerar um novo
-        setResult(''); 
+        setGeneratedPlan('');
 
         console.log({
             topic: classTopic,
@@ -38,28 +37,112 @@ export default function GeneratePage() {
             subject: subject,
         });
 
+        // Simulação da chamada da API e geração do plano
         setTimeout(() => {
             setIsLoading(false);
 
-            // 4. Crie o conteúdo do plano de aula em formato Markdown
-            const planoDeAulaGerado = `
-### Resultado da Simulação
+            const planoDeAulaSimulado = `
+### Plano de Aula Detalhado
 
 ---
 
-#### Tema: ${classTopic || 'Tema não definido'}
-#### Série: ${gradeLevel || 'Série não definida'}
+**Tema:** **${classTopic || 'Tema Indefinido'}**
+**Disciplina:** **${subject.charAt(0).toUpperCase() + subject.slice(1) || 'Disciplina Indefinida'}**
+**Série/Ano:** **${gradeLevel || 'Série Indefinida'}**
 
-* **Objetivo 1:** Fomentar a discussão inicial sobre o tema.
-* **Atividade Sugerida:** Roda de conversa com perguntas norteadoras.
-* **Recursos:** Lousa, giz e a participação dos alunos.
+**Objetivos:**
+* Compreender os conceitos fundamentais de ${classTopic}.
+* Desenvolver habilidades de análise crítica.
+* Estimular a participação e o debate em sala de aula.
+
+**Conteúdo:**
+* Introdução a ${classTopic}
+* Aspectos históricos e sociais (se aplicável)
+* Exemplos práticos e aplicações
+
+**Metodologia:**
+1.  **Aquecimento (5 min):** Iniciar com uma pergunta provocativa ou imagem relacionada ao tema.
+2.  **Explanação (20 min):** Apresentação do conteúdo principal com uso de slides.
+3.  **Atividade em Grupo (15 min):** Os alunos se dividem em grupos para resolver um problema ou discutir um subtema.
+4.  **Discussão e Fechamento (10 min):** Compartilhamento dos resultados e síntese da aula.
+
+**Recursos:**
+* Projetor e slides (Beamer)
+* Quadro branco/lousa
+* Materiais impressos (se necessário)
+* Acesso à internet (para pesquisa rápida)
+
+**Avaliação:**
+* Participação em aula
+* Entrega da atividade em grupo
+* Perguntas e respostas ao final
+
+**Observações:** Adaptar a complexidade do conteúdo à série e disciplina.
             `;
-            // 5. Salve o plano de aula gerado no estado 'result'
-            setResult(planoDeAulaGerado);
-
+            setGeneratedPlan(planoDeAulaSimulado);
             setSnackbarMessage('Plano de aula gerado com sucesso!');
             setSnackbarOpen(true);
-        }, 2000); 
+        }, 2000);
+    };
+
+    // Função para simular a geração do código LaTeX e navegar
+    const handleGenerateSlides = () => {
+        // Exemplo simples de código LaTeX baseado no plano gerado
+        const simulatedLatex = `
+\\documentclass{beamer}
+\\usetheme{Madrid} % Um tema simples para Beamer
+
+\\title{Plano de Aula: ${classTopic || 'Tema Indefinido'}}
+\\author{MestraPro AI}
+\\institute{Série: ${gradeLevel || 'Indefinida'}}
+\\date{${new Date().toLocaleDateString('pt-BR')}}
+
+\\begin{document}
+
+\\frame{\\titlepage}
+
+\\section*{Introdução}
+\\begin{frame}{Introdução ao Tema}
+  \\begin{itemize}
+    \\item Tema Central: \\textbf{${classTopic || 'Tema Indefinido'}}
+    \\item Disciplina: ${subject.charAt(0).toUpperCase() + subject.slice(1) || 'Indefinida'}
+    \\item Nível: ${gradeLevel || 'Indefinido'}
+  \\end{itemize}
+\\end{frame}
+
+\\section*{Objetivos da Aula}
+\\begin{frame}{Objetivos de Aprendizagem}
+  \\begin{itemize}
+    \\item Compreender conceitos fundamentais.
+    \\item Desenvolver análise crítica.
+    \\item Estimular participação e debate.
+  \\end{itemize}
+\\end{frame}
+
+\\section*{Metodologia e Recursos}
+\\begin{frame}{Como Vamos Aprender?}
+  \\begin{enumerate}
+    \\item Aquecimento com pergunta provocativa.
+    \\item Explanação com slides.
+    \\item Atividade em Grupo.
+    \\item Discussão e Fechamento.
+  \\end{enumerate}
+  \\textbf{Recursos:} Projetor, Quadro, Materiais Impressos.
+\\end{frame}
+
+\\begin{frame}{Próximos Passos}
+  \\begin{itemize}
+    \\item Gerar slides com IA (Beamer).
+    \\item Revisar e baixar materiais.
+    \\item Compartilhar com os alunos!
+  \\end{itemize}
+\\end{frame}
+
+\\end{document}
+        `;
+
+        // Navega para a página de preview do Beamer, passando o LaTeX simulado
+        navigate('/app/beamer-preview', { state: { generatedLatex: simulatedLatex, generatedPlan: generatedPlan } });
     };
 
     return (
@@ -70,10 +153,9 @@ export default function GeneratePage() {
             <Typography paragraph>
                 Preencha os campos abaixo para que a inteligência artificial possa criar um plano de aula personalizado.
             </Typography>
-            
+
             <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-                {/* O seu formulário continua exatamente igual aqui */}
-                    <TextField
+                <TextField
                     label="Tema da Aula"
                     variant="outlined"
                     fullWidth
@@ -84,28 +166,16 @@ export default function GeneratePage() {
                     disabled={isLoading}
                     sx={{
                         '& .MuiOutlinedInput-root': {
-                        '& fieldset': {
-                            borderColor: '#E879F9', // borda normal
+                            '& fieldset': { borderColor: '#E879F9' },
+                            '&:hover fieldset': { borderColor: '#D946EF' },
+                            '&.Mui-focused fieldset': { borderColor: '#C026D3' },
                         },
-                        '&:hover fieldset': {
-                            borderColor: '#D946EF', // borda ao passar o mouse
-                        },
-                        '&.Mui-focused fieldset': {
-                            borderColor: '#C026D3', // borda ao focar
-                        },
-                        },
-                        '& .MuiInputLabel-root': {
-                        color: '#A855F7', // cor padrão da label
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                        color: '#D946EF', // cor da label ao focar
-                        },
-                        input: {
-                        color: '#EDE9FE', // cor do texto digitado
-                        },
+                        '& .MuiInputLabel-root': { color: '#A855F7' },
+                        '& .MuiInputLabel-root.Mui-focused': { color: '#D946EF' },
+                        input: { color: '#EDE9FE' },
                     }}
-                    />
-                    <TextField
+                />
+                <TextField
                     label="Série ou Ano"
                     variant="outlined"
                     fullWidth
@@ -116,68 +186,44 @@ export default function GeneratePage() {
                     disabled={isLoading}
                     sx={{
                         '& .MuiOutlinedInput-root': {
-                        '& fieldset': {
-                            borderColor: '#E879F9', // borda normal
+                            '& fieldset': { borderColor: '#E879F9' },
+                            '&:hover fieldset': { borderColor: '#D946EF' },
+                            '&.Mui-focused fieldset': { borderColor: '#C026D3' },
                         },
-                        '&:hover fieldset': {
-                            borderColor: '#D946EF', // borda ao passar o mouse
-                        },
-                        '&.Mui-focused fieldset': {
-                            borderColor: '#C026D3', // borda ao focar
-                        },
-                        },
-                        '& .MuiInputLabel-root': {
-                        color: '#A855F7', // cor padrão da label
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                        color: '#D946EF', // cor da label ao focar
-                        },
-                        input: {
-                        color: '#EDE9FE', // cor do texto digitado
-                        },
+                        '& .MuiInputLabel-root': { color: '#A855F7' },
+                        '& .MuiInputLabel-root.Mui-focused': { color: '#D946EF' },
+                        input: { color: '#EDE9FE' },
                     }}
-                    />
+                />
                 <FormControl
-                fullWidth
-                margin="normal"
-                required
-                disabled={isLoading}
-                sx={{
+                    fullWidth
+                    margin="normal"
+                    required
+                    disabled={isLoading}
+                    sx={{
                         '& .MuiOutlinedInput-root': {
-                        '& fieldset': {
-                            borderColor: '#E879F9', // borda normal
+                            '& fieldset': { borderColor: '#E879F9' },
+                            '&:hover fieldset': { borderColor: '#D946EF' },
+                            '&.Mui-focused fieldset': { borderColor: '#C026D3' },
                         },
-                        '&:hover fieldset': {
-                            borderColor: '#D946EF', // borda ao passar o mouse
-                        },
-                        '&.Mui-focused fieldset': {
-                            borderColor: '#C026D3', // borda ao focar
-                        },
-                        },
-                        '& .MuiInputLabel-root': {
-                        color: '#A855F7', // cor padrão da label
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                        color: '#D946EF', // cor da label ao focar
-                        },
-                        value: {
-                        color: '#EDE9FE', // cor do texto digitado
-                        },
-                }}
+                        '& .MuiInputLabel-root': { color: '#A855F7' },
+                        '& .MuiInputLabel-root.Mui-focused': { color: '#D946EF' },
+                        value: { color: '#EDE9FE' },
+                    }}
                 >
-                <InputLabel id="subject-select-label">Disciplina</InputLabel>
-                <Select
-                    labelId="subject-select-label"
-                    id="subject-select"
-                    value={subject}
-                    label="Disciplina"
-                    onChange={(e) => setSubject(e.target.value)}
-                >
-                    <MenuItem value={'matematica'}>Matemática</MenuItem>
-                    <MenuItem value={'portugues'}>Português</MenuItem>
-                    <MenuItem value={'historia'}>História</MenuItem>
-                    <MenuItem value={'ciencias'}>Ciências</MenuItem>
-                </Select>
+                    <InputLabel id="subject-select-label">Disciplina</InputLabel>
+                    <Select
+                        labelId="subject-select-label"
+                        id="subject-select"
+                        value={subject}
+                        label="Disciplina"
+                        onChange={(e) => setSubject(e.target.value)}
+                    >
+                        <MenuItem value={'matematica'}>Matemática</MenuItem>
+                        <MenuItem value={'portugues'}>Português</MenuItem>
+                        <MenuItem value={'historia'}>História</MenuItem>
+                        <MenuItem value={'ciencias'}>Ciências</MenuItem>
+                    </Select>
                 </FormControl>
 
                 <Button
@@ -185,8 +231,8 @@ export default function GeneratePage() {
                     fullWidth
                     variant="contained"
                     size="large"
-                    sx={{ mt: 3, mb: 2, }}
-                    disabled={isLoading} 
+                    sx={{ mt: 3, mb: 2 }}
+                    disabled={isLoading}
                 >
                     {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Gerar Plano com IA'}
                 </Button>
@@ -201,25 +247,51 @@ export default function GeneratePage() {
                 </Button>
             </Box>
 
-            {/* 6. Adicione este novo bloco para exibir o resultado */}
-            {/* Ele só aparecerá se o estado 'result' não estiver vazio */}
-            {result && (
-                <Box sx={{ mt: 5, p: 3, border: '0.1rem solid magenta', borderRadius: '1rem', background: '#1E1E1E' }}>
-                    <Typography variant="h5" gutterBottom>
+            {generatedPlan && (
+                <Paper
+                    elevation={2}
+                    sx={{
+                        mt: 5,
+                        p: 3,
+                        border: '0.1rem solid #C026D3', // Use a cor primária para a borda
+                        borderRadius: '1rem',
+                        background: '#1E1E1E', // Um fundo um pouco diferente do principal para destaque
+                        color: '#EDE9FE', // Cor do texto
+                    }}
+                >
+                    <Typography variant="h5" gutterBottom sx={{ color: 'secondary.main' }}>
                         Plano de Aula Gerado
                     </Typography>
-                    <ReactMarkdown>{result}</ReactMarkdown>
-                </Box>
+                    <ReactMarkdown>{generatedPlan}</ReactMarkdown>
+
+                    <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleGenerateSlides}
+                            sx={{
+                                padding: '10px 30px',
+                                fontSize: '1rem',
+                            }}
+                        >
+                            Gerar Slides (Beamer)
+                        </Button>
+                    </Box>
+                </Paper>
             )}
 
-            {/* O Snackbar é o último elemento para garantir que ele apareça sobre todo o conteúdo */}
             <Snackbar
                 open={snackbarOpen}
                 autoHideDuration={6000}
                 onClose={() => setSnackbarOpen(false)}
                 message={snackbarMessage}
-                // Adiciona um estilo para o Snackbar se adequar ao tema escuro
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                sx={{
+                    '& .MuiSnackbarContent-root': {
+                        backgroundColor: '#C026D3', // Fundo do snackbar com a cor primária
+                        color: '#EDE9FE', // Texto do snackbar
+                    }
+                }}
             />
         </Container>
     );
