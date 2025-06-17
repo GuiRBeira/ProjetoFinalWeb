@@ -1,44 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, Paper, Grid, TextField, Stack, Container } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Box, Typography, Button, Paper, Grid, TextField, Stack } from '@mui/material';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
+import ReactMarkdown from 'react-markdown';
 
 function BeamerPreviewPage() {
-  console.log("BeamerPreviewPage está tentando renderizar!");
+  console.log("BeamerPreviewPage está tentando renderizar!");  
+  const location = useLocation();
+  const generatedLatex = location.state?.generatedLatex || '';
+  const generatedPlan = location.state?.generatedPlan || '';
 
   const [currentLatexDisplay, setCurrentLatexDisplay] = useState('');
   const [slideContent, setSlideContent] = useState('Nenhum slide para pré-visualizar.');
 
   useEffect(() => {
-    const savedLatex = localStorage.getItem('generatedLatex') || '';
-    const savedPlan = localStorage.getItem('generatedPlan') || '';
-
-    if (savedLatex) {
-      setCurrentLatexDisplay(savedLatex);
-    } else {
-      // Conteúdo de fallback LaTeX
-      setCurrentLatexDisplay(`\\documentclass{beamer}
-  \\begin{document}
-  \\begin{frame}
-    \\frametitle{Introdução}
-    Bem-vindos à apresentação Beamer!
-  \\end{frame}
-  \\end{document}`);
+    if (generatedLatex) {
+      setCurrentLatexDisplay(generatedLatex);
     }
-
-    if (savedPlan) {
-      const planTitleMatch = savedPlan.match(/Tema:\s*\*\*(.*?)\*\*/);
+    if (generatedPlan) {
+      const planTitleMatch = generatedPlan.match(/Tema:\s*\*\*(.*?)\*\*/);
       if (planTitleMatch && planTitleMatch[1]) {
         setSlideContent(`Tema: ${planTitleMatch[1].trim()}`);
       } else {
         setSlideContent('Conteúdo do Slide (Plano de aula sem tema detectado)');
       }
-    } else {
-      // Conteúdo de fallback para o slide
-      setSlideContent('Tema: Introdução à Apresentação Beamer');
     }
-  }, []);
-
+  }, [generatedLatex, generatedPlan]);
 
   const handleGenerateNewLatex = () => {
     console.log("Ação: Gerar Novo Código LaTeX clicada!");
@@ -87,11 +74,6 @@ function BeamerPreviewPage() {
 
   return (
     <AppLayout>
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 2 }}>
-
-          <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'primary.main' }}>
-            Visualização e Geração de Slides Beamer
-          </Typography>
       <Box
         sx={{
           padding: 4,
@@ -106,6 +88,9 @@ function BeamerPreviewPage() {
           minHeight: '80vh',
         }}
       >
+        <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'primary.main' }}>
+          Visualização e Geração de Slides Beamer
+        </Typography>
 
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
@@ -117,7 +102,7 @@ function BeamerPreviewPage() {
               multiline
               rows={20}
               value={currentLatexDisplay}
-              onChange={(e) => setCurrentLatexDisplay(e.target.value)}
+              onChange={(e) => setCurrentLatexDisplay(e.target.value)} // <-- CORRIGIDO AQUI!
               variant="outlined"
               fullWidth
               sx={{
@@ -172,7 +157,6 @@ function BeamerPreviewPage() {
           </Button>
         </Box>
       </Box>
-      </Container>
     </AppLayout>
   );
 }
