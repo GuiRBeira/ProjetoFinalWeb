@@ -10,7 +10,9 @@ export default function AppLayout() {
       >
         <Toolbar>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, color: '#E879F9' }}>
+            <Button color="inherit" component={RouterLink} to="/">
             MestraPro
+          </Button>
           </Typography>
           {/* Adicionando botões de navegação para facilitar durante o desenvolvimento */}
           <Button color="inherit" component={RouterLink} to="/app/dashboard">

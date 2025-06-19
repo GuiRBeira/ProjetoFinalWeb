@@ -1,13 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import AppLayout from './components/AppLayout';
-import GeneratePage from './pages/GeneratePage';
-import DashboardPage from './pages/DashboardPage';
-import BeamerPreviewPage from './pages/BeamerPreviewPage';
+import { createTheme } from "@mui/material";
 
 const theme = createTheme({
   palette: {
@@ -98,23 +89,4 @@ const theme = createTheme({
   },
 });
 
-function App() {
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route element={<AppLayout />}>
-            <Route path="/app/dashboard" element={<DashboardPage />} />
-            <Route path="/app/gerar" element={<GeneratePage />} />
-            <Route path="/app/beamer-preview" element={<BeamerPreviewPage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
-  );
-}
-
-export default App;
+export default theme;

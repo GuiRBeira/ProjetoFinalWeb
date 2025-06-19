@@ -9,7 +9,7 @@ export default function DashboardPage() {
         <Typography variant="h4" component="h1" gutterBottom>
           Bem-vindo(a) ao seu Dashboard!
         </Typography>
-        <Typography variant="body1" paragraph>
+        <Typography variant="body1">
           Aqui você pode gerenciar seus planos de aula e criar novos materiais com o poder da Inteligência Artificial.
         </Typography>
         

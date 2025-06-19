@@ -150,7 +150,7 @@ export default function GeneratePage() {
             <Typography component="h1" variant="h4" gutterBottom>
                 Gerador de Plano de Aula
             </Typography>
-            <Typography paragraph>
+            <Typography>
                 Preencha os campos abaixo para que a inteligência artificial possa criar um plano de aula personalizado.
             </Typography>
 
