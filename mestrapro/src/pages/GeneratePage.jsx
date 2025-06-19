@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom'; // Importe useNavigate
 import ReactMarkdown from 'react-markdown';
+import axios from 'axios'; // Importa axios para chamadas de API
 
 export default function GeneratePage() {
     const [classTopic, setClassTopic] = useState('');
@@ -26,63 +27,37 @@ export default function GeneratePage() {
     const [generatedPlan, setGeneratedPlan] = useState(''); // Renomeado de 'result' para 'generatedPlan'
     const navigate = useNavigate(); // Hook para navegação programática
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         setIsLoading(true);
         setGeneratedPlan('');
 
-        console.log({
+        const requestData = {
             topic: classTopic,
             grade: gradeLevel,
             subject: subject,
-        });
+        };
 
-        // Simulação da chamada da API e geração do plano
-        setTimeout(() => {
-            setIsLoading(false);
+        try {
+            // Faz a chamada POST para a sua API FastAPI que está rodando localmente
+            const response = await axios.post(
+                'https://mestra-pro-api.onrender.com/api/v1/generate/lesson_plan'
+                , requestData);
 
-            const planoDeAulaSimulado = `
-### Plano de Aula Detalhado
-
----
-
-**Tema:** **${classTopic || 'Tema Indefinido'}**
-**Disciplina:** **${subject.charAt(0).toUpperCase() + subject.slice(1) || 'Disciplina Indefinida'}**
-**Série/Ano:** **${gradeLevel || 'Série Indefinida'}**
-
-**Objetivos:**
-* Compreender os conceitos fundamentais de ${classTopic}.
-* Desenvolver habilidades de análise crítica.
-* Estimular a participação e o debate em sala de aula.
-
-**Conteúdo:**
-* Introdução a ${classTopic}
-* Aspectos históricos e sociais (se aplicável)
-* Exemplos práticos e aplicações
-
-**Metodologia:**
-1.  **Aquecimento (5 min):** Iniciar com uma pergunta provocativa ou imagem relacionada ao tema.
-2.  **Explanação (20 min):** Apresentação do conteúdo principal com uso de slides.
-3.  **Atividade em Grupo (15 min):** Os alunos se dividem em grupos para resolver um problema ou discutir um subtema.
-4.  **Discussão e Fechamento (10 min):** Compartilhamento dos resultados e síntese da aula.
-
-**Recursos:**
-* Projetor e slides (Beamer)
-* Quadro branco/lousa
-* Materiais impressos (se necessário)
-* Acesso à internet (para pesquisa rápida)
-
-**Avaliação:**
-* Participação em aula
-* Entrega da atividade em grupo
-* Perguntas e respostas ao final
-
-**Observações:** Adaptar a complexidade do conteúdo à série e disciplina.
-            `;
-            setGeneratedPlan(planoDeAulaSimulado);
+            // Pega o plano de aula da resposta da API e atualiza o estado
+            setGeneratedPlan(response.data.plan);
             setSnackbarMessage('Plano de aula gerado com sucesso!');
             setSnackbarOpen(true);
-        }, 2000);
+
+        } catch (error) {
+            // Se der algum erro na comunicação, mostre no console e no snackbar
+            console.error("Erro ao chamar a API:", error);
+            setSnackbarMessage('Erro ao se comunicar com o servidor. Verifique se a API está rodando.');
+            setSnackbarOpen(true);
+        } finally {
+            // Independentemente de sucesso ou erro, pare o loading ao final
+            setIsLoading(false);
+        }
     };
 
     // Função para simular a geração do código LaTeX e navegar
