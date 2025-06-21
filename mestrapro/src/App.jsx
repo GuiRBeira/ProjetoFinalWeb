@@ -9,6 +9,7 @@ import AppLayout from './components/AppLayout';
 import GeneratePage from './pages/GeneratePage';
 import DashboardPage from './pages/DashboardPage';
 import BeamerPreviewPage from './pages/BeamerPreviewPage';
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
   return (
@@ -16,12 +17,13 @@ function App() {
       <CssBaseline />
       <BrowserRouter>
         <Routes>
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
             <Route path="/app/dashboard" element={<DashboardPage />} />
             <Route path="/app/gerar" element={<GeneratePage />} />
             <Route path="/app/beamer-preview" element={<BeamerPreviewPage />} />
+            <Route element={<AppLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/login" element={<LoginPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
