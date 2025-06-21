@@ -17,13 +17,13 @@ function App() {
       <CssBaseline />
       <BrowserRouter>
         <Routes>
-            <Route path="/app/dashboard" element={<DashboardPage />} />
-            <Route path="/app/gerar" element={<GeneratePage />} />
-            <Route path="/app/beamer-preview" element={<BeamerPreviewPage />} />
-            <Route element={<AppLayout />}>
-            <Route path="/" element={<HomePage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route element={<AppLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/app/beamer-preview" element={<BeamerPreviewPage />} />
+            <Route path="/app/gerar" element={<GeneratePage />} />
+            <Route path="/app/dashboard" element={<DashboardPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

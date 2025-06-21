@@ -1,10 +1,13 @@
 // 1. Importe o 'useState' do React
 import { useState } from 'react';
+import axiosClient from '../api/axiosClient';
+import { useAuth } from '../context/AuthContext';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Container, Box, Typography, TextField, Button, Snackbar, Grid, Link } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
-import axios from 'axios';
 
 export default function LoginPage() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -20,25 +23,21 @@ export default function LoginPage() {
     formData.append('password', password);
 
     try {
-      const response = await axios.post(
-        'https://mestra-pro-api.onrender.com/auth/login', // Use a URL da sua API na Render
-        formData,
-        {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        }
-      );
-
+      const response = await axiosClient.post('/auth/login', formData, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      });
+      // 5. Se o login for bem-sucedido, a resposta conterá o token de acesso
       const accessToken = response.data.access_token;
       console.log("LOGIN BEM-SUCEDIDO! Token de acesso:", accessToken);
 
-      // **PRÓXIMOS PASSOS AQUI:**
-      localStorage.setItem('accessToken', accessToken);
+      // 6. Use a função 'login' do contexto para armazenar o token
+      login(accessToken);
+      // 7. Redirecione o usuário para o dashboard
       navigate('/app/dashboard');
 
       // Exibir snackbar de sucesso
       setSnackbarMessage('Login realizado com sucesso!');
       setSnackbarOpen(true);
-      
     } catch (error) {
       console.error("Erro no login:", error);
       // Exibir snackbar de erro
@@ -48,7 +47,7 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
-
+  
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -137,3 +136,4 @@ export default function LoginPage() {
     </Container>
   );
 }
+

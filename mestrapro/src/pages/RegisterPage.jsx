@@ -4,20 +4,24 @@ import { useState } from 'react';
 import { Container, Box, Typography, TextField, Button, Snackbar, Grid, Link, InputAdornment, IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosClient from '../api/axiosClient';
 
 export default function RegisterPage() {
     const [name, setName] = useState(''); // Estado para o nome
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState(''); // Estado para o e-mail
+    const [password, setPassword] = useState(''); // Estado para a senha
     const [confirmPassword, setConfirmPassword] = useState(''); // Estado para confirmar a senha
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar a senha
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Estado para mostrar/ocultar a confirmação da senha
+    const [isLoading, setIsLoading] = useState(false); // Estado para controle de carregamento
+    const [snackbarOpen, setSnackbarOpen] = useState(false); // Estado para controle do Snackbar
+    const [snackbarMessage, setSnackbarMessage] = useState(''); // Estado para a mensagem do Snackbar
+    const navigate = useNavigate(); // Hook para navegação
 
+
+    /**********************************************/
+    // Função para lidar com o envio do formulário//
+    /**********************************************/
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -30,15 +34,16 @@ export default function RegisterPage() {
             return; // Para a execução se as senhas forem diferentes
         }
 
-        // 2. Validação de Força da Senha (Exemplo simples)
-        if (password.length < 8) {
-            setSnackbarMessage('A senha deve ter pelo menos 8 caracteres.');
+        // 2. Validação de Força da Senha
+        const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!$*&@#])[0-9a-zA-Z!$*&@#]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            setSnackbarMessage('A senha deve ter no mínimo 8 caracteres, incluindo maiúscula, minúscula, número e caractere especial ($*&@#).');
             setSnackbarOpen(true);
             return;
         }
 
         // 3. Validação de Email (Regex simples para exemplo)
-        const emailRegex = /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i;
+        const emailRegex = /^[a-z0-9.]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
         if (!emailRegex.test(email)) {
             setSnackbarMessage('Por favor, insira um formato de e-mail válido.');
             setSnackbarOpen(true);
@@ -46,12 +51,12 @@ export default function RegisterPage() {
         }
 
         // --- FIM DAS VALIDAÇÕES ---
-
+        
         setIsLoading(true);
         const requestData = { name, email, password };
 
         try {
-            await axios.post('https://mestra-pro-api.onrender.com/auth/register', requestData);
+            await axiosClient.post('/auth/register', requestData);
             setSnackbarMessage('Cadastro realizado com sucesso! Redirecionando para o login...');
             setSnackbarOpen(true);
 
@@ -95,6 +100,7 @@ export default function RegisterPage() {
                     <TextField
                         label="Senha"
                         type={showPassword ? 'text' : 'password'}
+                        helperText="Mínimo 8 caracteres, com maiúscula, minúscula, número e especial ($*&@#)."
                         required
                         fullWidth
                         margin="normal"
