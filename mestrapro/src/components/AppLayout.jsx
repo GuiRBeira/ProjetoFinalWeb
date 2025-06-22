@@ -30,7 +30,7 @@ export default function AppLayout() {
                         // Se o usuário ESTIVER autenticado, mostre isso:
                         <>
                             {/* No futuro, podemos buscar e mostrar o nome do usuário aqui */}
-                            <Typography sx={{ mr: 2 }}>Olá, Professor!</Typography>
+                            <Typography sx={{ mr: 2 }}>Olá Professor!</Typography>
                             <Button color="inherit" onClick={handleLogout}>
                                 Sair
                             </Button>

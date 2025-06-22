@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom'; // Importe useNavigate
 import ReactMarkdown from 'react-markdown';
-import axios from 'axios'; // Importa axios para chamadas de API
+import axiosClient from '../api/axiosClient';
 
 export default function GeneratePage() {
     const [classTopic, setClassTopic] = useState('');
@@ -40,8 +40,8 @@ export default function GeneratePage() {
 
         try {
             // Faz a chamada POST para a sua API FastAPI que está rodando localmente
-            const response = await axios.post(
-                'https://mestra-pro-api.onrender.com/api/v1/generate/lesson_plan'
+            const response = await axiosClient.post(
+                '/api/v1/generate/lesson_plan'
                 , requestData);
 
             // Pega o plano de aula da resposta da API e atualiza o estado
