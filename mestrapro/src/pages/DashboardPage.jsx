@@ -1,11 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Card, CardContent, CardActions, Button, Typography, CircularProgress, Box } from '@mui/material';
+import {
+  Container,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Typography,
+  CircularProgress,
+  Box,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Link as RouterLink } from 'react-router-dom';
 import axiosClient from '../api/axiosClient';
 
 export default function DashboardPage() {
   const [plans, setPlans] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [planToDelete, setPlanToDelete] = useState(null);
+
   useEffect(() => {
     // Simulando uma chamada à API para buscar planos de aula
     const fetchPlans = async () => {
@@ -52,6 +73,32 @@ export default function DashboardPage() {
       // Aqui você pode mostrar um snackbar de erro
     }
   };
+
+  const handleDelete = (planId) => {
+    setPlanToDelete(planId);
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setPlanToDelete(null);
+  };
+
+  const handleComfirmDelete = async () => {
+    if (!planToDelete) return;
+
+    try {
+      await axiosClient.delete(`/api/v1/${planToDelete}/delete`);
+      setPlans(plans.filter(plan => plan.id !== planToDelete));
+      handleCloseDialog();
+    } catch (error) {
+      console.error('Erro ao excluir o plano de aula:', error);
+      // Aqui você pode mostrar um snackbar de erro
+    } finally {
+      handleCloseDialog();
+    }
+  };
+
   // Continue dentro do DashboardPage.jsx
 
   return (
@@ -85,8 +132,32 @@ export default function DashboardPage() {
                   >
                     Baixar PDF
                   </Button>
+                  <IconButton
+                    aria-label="delete"
+                    onClick={() => handleDelete(plan.id)}
+                    sx={{ marginLeft: 'auto' }}>
+                    <DeleteIcon />
+                  </IconButton>
                 </CardActions>
               </Card>
+              <Dialog
+                open={dialogOpen}
+                onClose={handleCloseDialog}
+              >
+                <DialogTitle>Confirmar Deleção</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    Você tem certeza que quer deletar o plano de aula
+                    <strong>"{planToDelete?.topic}"</strong>? Esta ação não pode ser desfeita.
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleCloseDialog}>Cancelar</Button>
+                  <Button onClick={handleComfirmDelete} color="primary" autoFocus>
+                    Deletar
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </Grid>
           ))}
         </Grid>

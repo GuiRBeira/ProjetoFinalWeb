@@ -2,8 +2,19 @@
 import { useState } from 'react';
 import axiosClient from '../api/axiosClient';
 import { useAuth } from '../context/AuthContext';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import InputAdornment from '@mui/material/InputAdornment';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { Container, Box, Typography, TextField, Button, Snackbar, Grid, Link } from '@mui/material';
+import { Container, 
+         Box, 
+         Typography, 
+         TextField, 
+         Button, 
+         Snackbar, 
+         Grid, 
+         Link,
+         IconButton } from '@mui/material';
+
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -13,6 +24,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // 4. Crie uma função para lidar com o envio do formulário
   const handleSubmit = async (event) => {
@@ -21,6 +33,8 @@ export default function LoginPage() {
     const formData = new URLSearchParams();
     formData.append('username', email); // A API espera 'username' para o campo de e-mail
     formData.append('password', password);
+
+
 
     try {
       const response = await axiosClient.post('/auth/login', formData, {
@@ -92,22 +106,34 @@ export default function LoginPage() {
             name="email"
             autoComplete="email"
             autoFocus
-            // 3. Conecte o estado ao campo de email
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
-            margin="normal"
+            label="Senha"
+            type={showPassword ? 'text' : 'password'}
             required
             fullWidth
             name="password"
-            label="Senha"
-            type="password"
+            margin="normal"
             id="password"
             autoComplete="current-password"
-            // 3. Conecte o estado ao campo de senha
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowPassword(!showPassword)}
+                    onMouseDown={(e) => e.preventDefault()}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           <Button
             type="submit"

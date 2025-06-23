@@ -1,10 +1,19 @@
 // Em: src/pages/RegisterPage.jsx
 
 import { useState } from 'react';
-import { Container, Box, Typography, TextField, Button, Snackbar, Grid, Link, InputAdornment, IconButton } from '@mui/material';
+import axiosClient from '../api/axiosClient';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import axiosClient from '../api/axiosClient';
+import { Container,
+         Box, 
+         Typography, 
+         TextField, 
+         Button, 
+         Snackbar, 
+         Grid, 
+         Link, 
+         InputAdornment, 
+         IconButton } from '@mui/material';
 
 export default function RegisterPage() {
     const [name, setName] = useState(''); // Estado para o nome
