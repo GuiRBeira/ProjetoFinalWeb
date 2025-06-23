@@ -1,63 +1,72 @@
-import { createTheme } from "@mui/material";
+// A importação correta para createTheme é de @mui/material/styles
+import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   palette: {
     mode: 'dark',
-    // ADICIONE ESTE BLOCO PARA DEFINIR SUA COR PRIMÁRIA
     primary: {
-      main: '#C026D3', // Defina o seu roxo de foco como a cor principal do site
+      main: '#C026D3',
     },
-    // Opcional, mas bom para consistência
     secondary: {
-      main: '#E879F9', // O roxo mais claro como cor secundária
+      main: '#E879F9',
     },
   },
+  // O objeto 'components' contém todas as customizações, uma para cada componente
   components: {
+    // Customização para estilos globais
     MuiCssBaseline: {
       styleOverrides: {
+        // A regra do 'body' fica aqui dentro
         body: {
           backgroundColor: '#161616',
           backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.05) 1px, transparent 0)',
           backgroundSize: '20px 20px',
           backgroundRepeat: 'repeat',
-          fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',},
+          fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+        },
+        // A regra do autocomplete também vem aqui dentro
+        'input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active': {
+          '-webkit-box-shadow': '0 0 0 30px #2E2E2E inset !important',
+          '-webkit-text-fill-color': '#EDE9FE !important',
+          caretColor: '#fff',
+          transition: 'background-color 5000s ease-in-out 0s',
+        },
       },
     },
+    // Customização para o OutlinedInput (irmão do MuiCssBaseline, não filho)
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          // Cor do texto digitado
           '& input': {
             color: '#EDE9FE',
           },
-          // Cor do texto selecionado no Select
           '& .MuiSelect-select': {
             color: '#EDE9FE',
           },
           '& fieldset': {
-            borderColor: '#C026D3', // Borda padrão
+            borderColor: '#C026D3',
           },
           '&:hover fieldset': {
-            borderColor: '#D946EF', // Borda no hover
+            borderColor: '#D946EF',
           },
           '&.Mui-focused fieldset': {
-            borderColor: '#C026D3', // Borda no foco
+            borderColor: '#C026D3',
           },
         },
       },
     },
-    // REGRA GLOBAL PARA TODAS AS LABELS
+    // Customização para o InputLabel
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          color: '#A855F7', // Cor padrão
+          color: '#A855F7',
           '&.Mui-focused': {
-            color: '#D946EF', // Cor no foco
+            color: '#D946EF',
           },
         },
       },
     },
-    // REGRA GLOBAL PARA A SETA DO SELECT
+    // Customização para o Select
     MuiSelect: {
       styleOverrides: {
         icon: {
@@ -65,6 +74,7 @@ const theme = createTheme({
         },
       },
     },
+    // Customização para o Button
     MuiButton: {
       defaultProps: {
         size: 'large',
