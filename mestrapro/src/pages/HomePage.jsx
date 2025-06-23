@@ -22,7 +22,6 @@ export default function HomePage() {
           A sua assistente de IA para criar planos de aula e materiais didáticos incríveis.
         </Typography>
         <Button
-          // 2. Use o componente 'RouterLink' e a prop 'to' para definir o destino
           component={RouterLink}
           to="/login"
           variant="contained"

@@ -160,6 +160,15 @@ export default function DashboardPage() {
               </Dialog>
             </Grid>
           ))}
+          <Button
+            component={RouterLink}
+            to="/app/gerar"
+            variant="contained"
+            fullWidth
+            sx={{ mb: 1 }}
+          >
+            Gerar Novo Plano de Aula
+          </Button>
         </Grid>
       )}
     </Container>
