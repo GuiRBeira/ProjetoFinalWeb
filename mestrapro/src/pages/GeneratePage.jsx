@@ -1,4 +1,7 @@
-import { useState } from 'react';
+// src/pages/GeneratePage.jsx
+
+
+import React, { useState } from 'react';
 import {
     Container,
     Box,
@@ -11,9 +14,9 @@ import {
     MenuItem,
     CircularProgress,
     Snackbar,
-    Paper, // Importe Paper para o box de resultado
+    Paper,
 } from '@mui/material';
-import { Link as RouterLink, useNavigate } from 'react-router-dom'; // Importe useNavigate
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import axiosClient from '../api/axiosClient';
 
@@ -24,8 +27,9 @@ export default function GeneratePage() {
     const [isLoading, setIsLoading] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [generatedPlan, setGeneratedPlan] = useState(''); // Renomeado de 'result' para 'generatedPlan'
-    const navigate = useNavigate(); // Hook para navegação programática
+    const [generatedPlan, setGeneratedPlan] = useState('');
+    const [isGeneratingSlides, setIsGeneratingSlides] = useState(false); // NOVO ESTADO DE LOADING
+    const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -37,87 +41,55 @@ export default function GeneratePage() {
             grade: gradeLevel,
             subject: subject,
         };
-
         try {
-            // Faz a chamada POST para a sua API FastAPI que está rodando localmente
             const response = await axiosClient.post(
                 '/api/v1/generate/lesson_plan'
                 , requestData);
-
-            // Pega o plano de aula da resposta da API e atualiza o estado
             setGeneratedPlan(response.data.plan);
             setSnackbarMessage('Plano de aula gerado com sucesso!');
             setSnackbarOpen(true);
 
         } catch (error) {
-            // Se der algum erro na comunicação, mostre no console e no snackbar
             console.error("Erro ao chamar a API:", error);
             setSnackbarMessage('Erro ao se comunicar com o servidor. Verifique se a API está rodando.');
             setSnackbarOpen(true);
         } finally {
-            // Independentemente de sucesso ou erro, pare o loading ao final
             setIsLoading(false);
         }
     };
 
-    // Função para simular a geração do código LaTeX e navegar
-    const handleGenerateSlides = () => {
-        // Exemplo simples de código LaTeX baseado no plano gerado
-        const simulatedLatex = `
-\\documentclass{beamer}
-\\usetheme{Madrid} % Um tema simples para Beamer
+    const handleGenerateSlides = async () => {
+        if (!generatedPlan) {
+            setSnackbarMessage('Primeiro, gere um plano de aula.');
+            setSnackbarOpen(true);
+            return;
+        }
 
-\\title{Plano de Aula: ${classTopic || 'Tema Indefinido'}}
-\\author{MestraPro AI}
-\\institute{Série: ${gradeLevel || 'Indefinida'}}
-\\date{${new Date().toLocaleDateString('pt-BR')}}
+        setIsGeneratingSlides(true); // Ativa o loading
+        try {
+            // Chama a nova rota da API para gerar o código LaTeX
+            const response = await axiosClient.post(
+                '/api/v1/beamer/generate/beamer_from_plan',
+                { content: generatedPlan } // Envia o plano de aula no corpo da requisição
+            );
 
-\\begin{document}
+            const latexFromAI = response.data.latex_code;
 
-\\frame{\\titlepage}
+            // Navega para a página de preview, passando o LaTeX real gerado pela IA
+            navigate('/app/beamer-preview', {
+                state: {
+                    generatedLatex: latexFromAI,
+                    generatedPlan: generatedPlan
+                }
+            });
 
-\\section*{Introdução}
-\\begin{frame}{Introdução ao Tema}
-  \\begin{itemize}
-    \\item Tema Central: \\textbf{${classTopic || 'Tema Indefinido'}}
-    \\item Disciplina: ${subject.charAt(0).toUpperCase() + subject.slice(1) || 'Indefinida'}
-    \\item Nível: ${gradeLevel || 'Indefinido'}
-  \\end{itemize}
-\\end{frame}
-
-\\section*{Objetivos da Aula}
-\\begin{frame}{Objetivos de Aprendizagem}
-  \\begin{itemize}
-    \\item Compreender conceitos fundamentais.
-    \\item Desenvolver análise crítica.
-    \\item Estimular participação e debate.
-  \\end{itemize}
-\\end{frame}
-
-\\section*{Metodologia e Recursos}
-\\begin{frame}{Como Vamos Aprender?}
-  \\begin{enumerate}
-    \\item Aquecimento com pergunta provocativa.
-    \\item Explanação com slides.
-    \\item Atividade em Grupo.
-    \\item Discussão e Fechamento.
-  \\end{enumerate}
-  \\textbf{Recursos:} Projetor, Quadro, Materiais Impressos.
-\\end{frame}
-
-\\begin{frame}{Próximos Passos}
-  \\begin{itemize}
-    \\item Gerar slides com IA (Beamer).
-    \\item Revisar e baixar materiais.
-    \\item Compartilhar com os alunos!
-  \\end{itemize}
-\\end{frame}
-
-\\end{document}
-        `;
-
-        // Navega para a página de preview do Beamer, passando o LaTeX simulado
-        navigate('/app/beamer-preview', { state: { generatedLatex: simulatedLatex, generatedPlan: generatedPlan } });
+        } catch (error) {
+            console.error("Erro ao gerar slides com IA:", error);
+            setSnackbarMessage('Erro ao se comunicar com a IA para gerar os slides.');
+            setSnackbarOpen(true);
+        } finally {
+            setIsGeneratingSlides(false); // Desativa o loading
+        }
     };
 
     return (
@@ -139,16 +111,6 @@ export default function GeneratePage() {
                     value={classTopic}
                     onChange={(e) => setClassTopic(e.target.value)}
                     disabled={isLoading}
-                    sx={{
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': { borderColor: '#E879F9' },
-                            '&:hover fieldset': { borderColor: '#D946EF' },
-                            '&.Mui-focused fieldset': { borderColor: '#C026D3' },
-                        },
-                        '& .MuiInputLabel-root': { color: '#A855F7' },
-                        '& .MuiInputLabel-root.Mui-focused': { color: '#D946EF' },
-                        input: { color: '#EDE9FE' },
-                    }}
                 />
                 <TextField
                     label="Série ou Ano"
@@ -159,32 +121,12 @@ export default function GeneratePage() {
                     value={gradeLevel}
                     onChange={(e) => setGradeLevel(e.target.value)}
                     disabled={isLoading}
-                    sx={{
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': { borderColor: '#E879F9' },
-                            '&:hover fieldset': { borderColor: '#D946EF' },
-                            '&.Mui-focused fieldset': { borderColor: '#C026D3' },
-                        },
-                        '& .MuiInputLabel-root': { color: '#A855F7' },
-                        '& .MuiInputLabel-root.Mui-focused': { color: '#D946EF' },
-                        input: { color: '#EDE9FE' },
-                    }}
                 />
                 <FormControl
                     fullWidth
                     margin="normal"
                     required
                     disabled={isLoading}
-                    sx={{
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': { borderColor: '#E879F9' },
-                            '&:hover fieldset': { borderColor: '#D946EF' },
-                            '&.Mui-focused fieldset': { borderColor: '#C026D3' },
-                        },
-                        '& .MuiInputLabel-root': { color: '#A855F7' },
-                        '& .MuiInputLabel-root.Mui-focused': { color: '#D946EF' },
-                        value: { color: '#EDE9FE' },
-                    }}
                 >
                     <InputLabel id="subject-select-label">Disciplina</InputLabel>
                     <Select
@@ -228,10 +170,10 @@ export default function GeneratePage() {
                     sx={{
                         mt: 5,
                         p: 3,
-                        border: '0.1rem solid #C026D3', // Use a cor primária para a borda
+                        border: '0.1rem solid #C026D3',
                         borderRadius: '1rem',
-                        background: '#1E1E1E', // Um fundo um pouco diferente do principal para destaque
-                        color: '#EDE9FE', // Cor do texto
+                        background: '#1E1E1E',
+                        color: '#EDE9FE',
                     }}
                 >
                     <Typography variant="h5" gutterBottom sx={{ color: 'secondary.main' }}>
@@ -244,12 +186,16 @@ export default function GeneratePage() {
                             variant="contained"
                             color="primary"
                             onClick={handleGenerateSlides}
+                            disabled={isLoading || isGeneratingSlides}
                             sx={{
                                 padding: '10px 30px',
                                 fontSize: '1rem',
                             }}
                         >
-                            Gerar Slides (Beamer)
+                            {isGeneratingSlides ?
+                                <CircularProgress size={26} color="inherit" /> :
+                                'Gerar Slides (Beamer)'
+                            }
                         </Button>
                     </Box>
                 </Paper>
@@ -261,12 +207,6 @@ export default function GeneratePage() {
                 onClose={() => setSnackbarOpen(false)}
                 message={snackbarMessage}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                sx={{
-                    '& .MuiSnackbarContent-root': {
-                        backgroundColor: '#C026D3', // Fundo do snackbar com a cor primária
-                        color: '#EDE9FE', // Texto do snackbar
-                    }
-                }}
             />
         </Container>
     );

@@ -1,24 +1,25 @@
+// src/pages/BeamerPreviewPage.jsx
+
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, Paper, Grid, TextField, Stack } from '@mui/material';
+import { Box, Typography, Button, Paper, Grid, TextField, Stack, CircularProgress } from '@mui/material';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-import AppLayout from '../components/AppLayout';
-import ReactMarkdown from 'react-markdown';
+import axiosClient from '../api/axiosClient';
 
 function BeamerPreviewPage() {
-  console.log("BeamerPreviewPage está tentando renderizar!");  
   const location = useLocation();
   const generatedLatex = location.state?.generatedLatex || '';
   const generatedPlan = location.state?.generatedPlan || '';
 
   const [currentLatexDisplay, setCurrentLatexDisplay] = useState('');
   const [slideContent, setSlideContent] = useState('Nenhum slide para pré-visualizar.');
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     if (generatedLatex) {
       setCurrentLatexDisplay(generatedLatex);
     }
     if (generatedPlan) {
-      const planTitleMatch = generatedPlan.match(/Tema:\s*\*\*(.*?)\*\*/);
+      const planTitleMatch = generatedPlan.match(/\*\*Tema da Aula:\*\*\s*(.*)/);
       if (planTitleMatch && planTitleMatch[1]) {
         setSlideContent(`Tema: ${planTitleMatch[1].trim()}`);
       } else {
@@ -32,9 +33,36 @@ function BeamerPreviewPage() {
     alert("Gerar Novo Código LaTeX (Funcionalidade em desenvolvimento)");
   };
 
-  const handleDownloadSlide = () => {
-    console.log("Ação: Baixar Slide (PDF) clicada!");
-    alert("Baixar Slide (PDF) (Funcionalidade em desenvolvimento)");
+  const handleDownloadSlide = async () => {
+    if (!currentLatexDisplay) {
+        alert("Não há código LaTeX para gerar o PDF.");
+        return;
+    }
+    setIsDownloading(true);
+    try {
+        const response = await axiosClient.post(
+            '/api/v1/beamer/generate/beamer_pdf',
+            { latex_code: currentLatexDisplay },
+            { responseType: 'blob' }
+        );
+
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+        const link = document.createElement('a');
+        link.href = url;
+        const fileName = `slides_mestrapro_${new Date().getTime()}.pdf`;
+        link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+        console.error("Erro ao baixar o PDF dos slides:", error);
+        const errorMessage = error.response?.data ? await error.response.data.text() : "Erro desconhecido.";
+        alert(`Falha ao gerar o PDF. Verifique o console ou o código LaTeX. Detalhe: ${errorMessage}`);
+    } finally {
+        setIsDownloading(false);
+    }
   };
 
   const renderSimulatedSlide = () => {
@@ -71,9 +99,9 @@ function BeamerPreviewPage() {
       </Paper>
     );
   };
-
+  
+  // A função não se envolve mais com <AppLayout>
   return (
-    <AppLayout>
       <Box
         sx={{
           padding: 4,
@@ -95,14 +123,14 @@ function BeamerPreviewPage() {
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <Typography variant="h6" gutterBottom sx={{ color: 'secondary.main' }}>
-              Código LaTeX Gerado (Simulação)
+              Código LaTeX Gerado (Editável)
             </Typography>
             <TextField
               label="Código LaTeX"
               multiline
               rows={20}
               value={currentLatexDisplay}
-              onChange={(e) => setCurrentLatexDisplay(e.target.value)} // <-- CORRIGIDO AQUI!
+              onChange={(e) => setCurrentLatexDisplay(e.target.value)}
               variant="outlined"
               fullWidth
               sx={{
@@ -128,19 +156,20 @@ function BeamerPreviewPage() {
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 3, justifyContent: 'center' }}>
                 <Button
                     variant="contained"
-                    color="primary"
+                    color="secondary"
                     onClick={handleGenerateNewLatex}
                     sx={{ flexGrow: 1 }}
                 >
-                    Gerar Novo Código LaTeX
+                    Gerar com IA (Em breve)
                 </Button>
                 <Button
                     variant="contained"
                     color="primary"
                     onClick={handleDownloadSlide}
+                    disabled={isDownloading}
                     sx={{ flexGrow: 1 }}
                 >
-                    Baixar Slide (PDF)
+                    {isDownloading ? <CircularProgress size={24} color="inherit" /> : 'Baixar Slide (PDF)'}
                 </Button>
             </Stack>
           </Grid>
@@ -157,7 +186,6 @@ function BeamerPreviewPage() {
           </Button>
         </Box>
       </Box>
-    </AppLayout>
   );
 }
 
