@@ -12,6 +12,7 @@ import GeneratePage from './pages/GeneratePage';
 import DashboardPage from './pages/DashboardPage';
 import BeamerPreviewPage from './pages/BeamerPreviewPage';
 import RegisterPage from './pages/RegisterPage';
+import PdfPreviewPage from './pages/PdfPreviewPage';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path="/app/beamer-preview" element={<BeamerPreviewPage />} />
             <Route path="/app/gerar" element={<GeneratePage />} />
             <Route path="/app/dashboard" element={<DashboardPage />} />
+            <Route path="/app/plans/:planId/preview" element={<PdfPreviewPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
