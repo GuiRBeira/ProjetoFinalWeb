@@ -15,7 +15,6 @@ import { Container,
          Link,
          IconButton } from '@mui/material';
 
-
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -34,15 +33,12 @@ export default function LoginPage() {
     formData.append('username', email); // A API espera 'username' para o campo de e-mail
     formData.append('password', password);
 
-
-
     try {
       const response = await axiosClient.post('/auth/login', formData, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       });
       // 5. Se o login for bem-sucedido, a resposta conterá o token de acesso
       const accessToken = response.data.access_token;
-      console.log("LOGIN BEM-SUCEDIDO! Token de acesso:", accessToken);
 
       // 6. Use a função 'login' do contexto para armazenar o token
       login(accessToken);
@@ -162,4 +158,3 @@ export default function LoginPage() {
     </Container>
   );
 }
-
